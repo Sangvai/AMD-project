@@ -47,6 +47,6 @@ Cloud-based data storage
 Advanced analytics dashboard
 
 # Author
-Sanika Govardhan Sangvai
 
 Sanika Govardhan Sangvai
+
