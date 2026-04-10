@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>FitApp React Single-Page App</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="./styles.css">
+
+    <!-- React CDN -->
+    <script crossorigin="anonymous" src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.development.js"></script>
+    <script crossorigin="anonymous" src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.development.js"></script>
+    
+    <!-- Babel CDN -->
+    <script crossorigin="anonymous" src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.3/babel.min.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+
+    <!-- Sole source of JavaScript & React Setup (Inline bypasses Chrome CORS) -->
+    <script type="text/babel" data-presets="react,env">
+        const { useState, useEffect } = React;
+
+        // -- Utilities --
+        const StorageUtils = {
+            saveData: (key, data) => {
+                try {
+                    localStorage.setItem(`fitapp_${key}`, JSON.stringify(data));
+                } catch (e) {
+                    console.error("Error saving to local storage", e);
+                }
+            },
+            loadData: (key, defaultData) => {
+                try {
+                    const item = localStorage.getItem(`fitapp_${key}`);
+                    return item ? JSON.parse(item) : defaultData;
+                } catch (e) {
+                    console.error("Error reading from local storage", e);
+                    return defaultData;
+                }
+            }
+        };
+
+        const calculateBMI = (weightKg, heightCm) => {
+            if (!weightKg || !heightCm || weightKg <= 0 || heightCm <= 0) return null;
+            const heightM = heightCm / 100;
+            const bmi = weightKg / (heightM * heightM);
+            
+            let category = '';
+            let categoryClass = '';
+            
+            if (bmi < 18.5) {
+                category = 'Underweight';
+                categoryClass = 'bmi-underweight';
+            } else if (bmi >= 18.5 && bmi < 24.9) {
+                category = 'Normal weight';
+                categoryClass = 'bmi-normal';
+            } else if (bmi >= 25 && bmi < 29.9) {
+                category = 'Overweight';
+                categoryClass = 'bmi-overweight';
+            } else {
+                category = 'Obese';
+                categoryClass = 'bmi-obese';
+            }
+            
+            return {
+                value: bmi.toFixed(1),
+                category: category,
+                className: categoryClass
+            };
+        };
+
+        // -- Components --
+        
+        const ProfileCard = ({ profile, setProfile }) => {
+            const handleInput = (e) => {
+                const { name, value } = e.target;
+                setProfile(prev => ({ ...prev, [name]: value }));
+            };
+
+            const bmiResult = calculateBMI(parseFloat(profile.weight), parseFloat(profile.height));
+
+            return (
+                <div className="card">
+                    <h2 className="card-title">👤 My Profile</h2>
+                    <div className="input-group">
+                        <label>Name</label>
+                        <input 
+                            name="name" 
+                            type="text" 
+                            className="glass-input" 
+                            placeholder="Your Name" 
+                            value={profile.name || ''} 
+                            onChange={handleInput} 
+                        />
+                    </div>
+                    <div className="input-group">
+                        <label>Age</label>
+                        <input 
+                            name="age" 
+                            type="number" 
+                            className="glass-input" 
+                            placeholder="Age" 
+                            value={profile.age || ''} 
+                            onChange={handleInput} 
+                        />
+                    </div>
+                    <div className="input-group">
+                        <label>Height (cm)</label>
+                        <input 
+                            name="height" 
+                            type="number" 
+                            className="glass-input" 
+                            placeholder="Height in cm" 
+                            value={profile.height || ''} 
+                            onChange={handleInput} 
+                        />
+                    </div>
+                    <div className="input-group">
+                        <label>Weight (kg)</label>
+                        <input 
+                            name="weight" 
+                            type="number" 
+                            className="glass-input" 
+                            placeholder="Weight in kg" 
+                            value={profile.weight || ''} 
+                            onChange={handleInput} 
+                        />
+                    </div>
+
+                    {bmiResult && (
+                        <div className={`bmi-result ${bmiResult.className}`}>
+                            BMI: {bmiResult.value} ({bmiResult.category})
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        const ProgressCard = ({ title, icon, value, goal, setter, colorTheme, unit }) => {
+            const handleAdd = (amount) => {
+                setter(prev => prev + amount);
+            };
+            
+            const handleReset = () => setter(0);
+
+            let percent = Math.min((value / goal) * 100, 100);
+            if (isNaN(percent)) percent = 0;
+
+            return (
+                <div className="card">
+                    <h2 className="card-title">{icon} {title}</h2>
+                    <div className="progress-container">
+                        <span className={`progress-value color-${colorTheme}`}>{value} <span style={{fontSize: '1rem', color: 'var(--text-muted)'}}>{unit}</span></span>
+                        <span className="progress-goal">Goal: {goal}</span>
+                    </div>
+                    
+                    <div className="progress-bar-bg">
+                        <div className={`progress-bar-fill fill-${colorTheme}`} style={{ width: `${percent}%` }}></div>
+                    </div>
+
+                    {colorTheme === 'water' && (
+                        <div className="action-buttons">
+                            <button className="btn-icon" onClick={() => handleAdd(1)}>+1 Glass</button>
+                            <button className="btn-icon" onClick={handleReset}>↺ Reset</button>
+                        </div>
+                    )}
+
+                    {colorTheme === 'steps' && (
+                        <div className="action-buttons">
+                            <button className="btn-icon" onClick={() => handleAdd(500)}>+500 Steps</button>
+                            <button className="btn-icon" onClick={() => handleAdd(1000)}>+1k Steps</button>
+                            <button className="btn-icon" onClick={handleReset}>↺ Reset</button>
+                        </div>
+                    )}
+
+                    {colorTheme === 'calories' && (
+                        <div className="action-buttons">
+                            <button className="btn-icon" onClick={() => handleAdd(100)}>+100 kcal</button>
+                            <button className="btn-icon" onClick={() => handleAdd(300)}>+300 kcal</button>
+                            <button className="btn-icon" onClick={handleReset}>↺ Reset</button>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        const App = () => {
+            const [profile, setProfile] = useState(() => StorageUtils.loadData('profile', { name: '', age: '', height: '', weight: '' }));
+            const [goals, setGoals] = useState(() => StorageUtils.loadData('goals', { water: 8, steps: 10000, calories: 2500 }));
+            const [water, setWater] = useState(() => StorageUtils.loadData('water', 0));
+            const [steps, setSteps] = useState(() => StorageUtils.loadData('steps', 0));
+            const [calories, setCalories] = useState(() => StorageUtils.loadData('calories', 0));
+
+            useEffect(() => { StorageUtils.saveData('profile', profile); }, [profile]);
+            useEffect(() => { StorageUtils.saveData('water', water); }, [water]);
+            useEffect(() => { StorageUtils.saveData('steps', steps); }, [steps]);
+            useEffect(() => { StorageUtils.saveData('calories', calories); }, [calories]);
+
+            const getGreeting = () => {
+                const hour = new Date().getHours();
+                if (hour < 12) return 'Good Morning';
+                if (hour < 18) return 'Good Afternoon';
+                return 'Good Evening';
+            };
+
+            return (
+                <div className="container">
+                    <div className="header">
+                        <h1>{getGreeting()}, {profile.name || 'Athlete'}!</h1>
+                        <p>Track your daily progress and hit those goals.</p>
+                    </div>
+
+                    <div className="grid">
+                        <ProfileCard profile={profile} setProfile={setProfile} />
+                        
+                        <div className="grid" style={{gridTemplateColumns: '1fr', gap: '20px'}}>
+                            <ProgressCard 
+                                title="Hydration" 
+                                icon="💧" 
+                                value={water} 
+                                goal={goals.water} 
+                                setter={setWater} 
+                                colorTheme="water" 
+                                unit="glasses"
+                            />
+                            
+                            <ProgressCard 
+                                title="Activity" 
+                                icon="👟" 
+                                value={steps} 
+                                goal={goals.steps} 
+                                setter={setSteps} 
+                                colorTheme="steps" 
+                                unit="steps"
+                            />
+                            
+                            <ProgressCard 
+                                title="Nutrition" 
+                                icon="🔥" 
+                                value={calories} 
+                                goal={goals.calories} 
+                                setter={setCalories} 
+                                colorTheme="calories" 
+                                unit="kcal"
+                            />
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const rootElement = document.getElementById('root');
+        const root = ReactDOM.createRoot(rootElement);
+        root.render(<App />);
+
+    </script>
+</body>
+</html>

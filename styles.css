@@ -1,0 +1,223 @@
+:root {
+  --primary: #4F46E5;
+  --primary-hover: #4338CA;
+  --secondary: #10B981;
+  --bg-color: #F3F4F6;
+  --card-bg: #FFFFFF;
+  --text-main: #1F2937;
+  --text-muted: #6B7280;
+  --danger: #EF4444;
+  --water: #3B82F6;
+  --calories: #F59E0B;
+  --steps: #8B5CF6;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+#root {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}
+
+.container {
+  max-width: 800px;
+  width: 100%;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.header h1 {
+  font-size: 2.5rem;
+  color: var(--primary);
+  font-weight: 800;
+  margin-bottom: 5px;
+}
+
+.header p {
+  color: var(--text-muted);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+@media(min-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.card {
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-main);
+}
+
+.input-group {
+  margin-bottom: 15px;
+}
+
+.input-group label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 5px;
+  color: var(--text-muted);
+}
+
+.glass-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #D1D5DB;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+}
+
+.glass-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  color: white;
+  width: 100%;
+}
+
+.btn-primary { background-color: var(--primary); }
+.btn-primary:hover { background-color: var(--primary-hover); }
+
+.btn-secondary { background-color: var(--secondary); margin-top: 10px; }
+.btn-secondary:hover { background-color: #059669; }
+
+.btn-outline {
+  background-color: transparent;
+  border: 2px solid var(--primary);
+  color: var(--primary);
+}
+.btn-outline:hover {
+  background-color: var(--primary);
+  color: white;
+}
+
+/* Stats/Progress Display */
+.progress-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 15px;
+}
+
+.progress-value {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.progress-goal {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.progress-bar-bg {
+  width: 100%;
+  height: 12px;
+  background-color: #E5E7EB;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 12px;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.5s ease-out;
+}
+
+.color-water { background-color: var(--water); color: var(--water); }
+.color-steps { background-color: var(--steps); color: var(--steps); }
+.color-calories { background-color: var(--calories); color: var(--calories); }
+
+.fill-water { background-color: var(--water); }
+.fill-steps { background-color: var(--steps); }
+.fill-calories { background-color: var(--calories); }
+
+/* Quick Action Buttons */
+.action-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.btn-icon {
+  flex: 1;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #D1D5DB;
+  background: white;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: background-color 0.2s;
+}
+.btn-icon:hover {
+  background-color: #F3F4F6;
+}
+
+.bmi-result {
+  text-align: center;
+  padding: 15px;
+  border-radius: 8px;
+  margin-top: 15px;
+  font-weight: 600;
+  font-size: 1.2rem;
+}
+
+.bmi-underweight { background: #DBEAFE; color: #1E40AF; }
+.bmi-normal { background: #D1FAE5; color: #065F46; }
+.bmi-overweight { background: #FEF3C7; color: #92400E; }
+.bmi-obese { background: #FEE2E2; color: #B91C1C; }
