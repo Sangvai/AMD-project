@@ -32,6 +32,8 @@ Open the project folder
 Double-click on index.html
 The application will run directly in your browser
 
+# Deployment link
+https://whimsical-marigold-acca19.netlify.app/
 
 # Objective
 
